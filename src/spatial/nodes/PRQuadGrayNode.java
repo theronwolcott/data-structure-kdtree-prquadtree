@@ -89,37 +89,37 @@ public class PRQuadGrayNode extends PRQuadNode {
         if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
             if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
                 if (this.list[0][0] == null) { // white
-                    this.list[0][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NW"), k / 2,
+                    this.list[0][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NW"), k - 1,
                             this.bucketingParam, p);
                     return this;
                 } else { // gray or black
-                    this.list[0][0] = this.list[0][0].insert(p, k / 2);
+                    this.list[0][0] = this.list[0][0].insert(p, k - 1);
                 }
             } else { // point is below centroid [1][0] SW
                 if (this.list[1][0] == null) { // white
-                    this.list[1][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SW"), k / 2,
+                    this.list[1][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SW"), k - 1,
                             this.bucketingParam, p);
                     return this;
                 } else { // gray or black
-                    this.list[1][0] = this.list[1][0].insert(p, k / 2);
+                    this.list[1][0] = this.list[1][0].insert(p, k - 1);
                 }
             }
         } else { // point is right of centroid
             if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
                 if (this.list[0][1] == null) { // white
-                    this.list[0][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NE"), k / 2,
+                    this.list[0][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NE"), k - 1,
                             this.bucketingParam, p);
                     return this;
                 } else { // gray or black
-                    this.list[0][1] = this.list[0][1].insert(p, k / 2);
+                    this.list[0][1] = this.list[0][1].insert(p, k - 1);
                 }
             } else { // point is below [1][1] SE
                 if (this.list[1][1] == null) { // white
-                    this.list[1][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SE"), k / 2,
+                    this.list[1][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SE"), k - 1,
                             this.bucketingParam, p);
                     return this;
                 } else { // gray or black
-                    this.list[1][1] = this.list[1][1].insert(p, k / 2);
+                    this.list[1][1] = this.list[1][1].insert(p, k - 1);
                 }
             }
         }
