@@ -341,7 +341,7 @@ public class KDTreeNode {
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
-        if (dist < n.getBestDist() && !node.p.equals(anchor)) {
+        if (dist < n.getBestDist() || n.getBestDist() < 0 && !node.p.equals(anchor)) {
             n.update(node.p, dist);
         }
 
