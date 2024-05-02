@@ -593,7 +593,7 @@ public class PRQuadGrayNode extends PRQuadNode {
         }
     }
 
-    public KDPoint nearestPointOnSquare(int k, KDPoint centroid, KDPoint anchor) {
+    private KDPoint nearestPointOnSquare(int k, KDPoint centroid, KDPoint anchor) {
         if (centroid == null) {
             return null;
         }
