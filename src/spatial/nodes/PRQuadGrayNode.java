@@ -433,38 +433,38 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[0][0].nearestNeighbor(anchor, n);
-                    // check if other three are in range
-                    if (neDist <= n.getBestDist()) {
-                        // visit
-                        this.list[0][1].nearestNeighbor(anchor, n);
-                    }
-                    if (swDist <= n.getBestDist()) {
-                        // visit
-                        this.list[1][0].nearestNeighbor(anchor, n);
-                    }
-                    if (seDist <= n.getBestDist()) {
-                        // visit
-                        this.list[1][1].nearestNeighbor(anchor, n);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][1] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[0][1].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][0] != null && (swDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[1][0].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][1] != null && (seDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[1][1].nearestNeighbor(anchor, n);
                 }
             } else { // point is below centroid [1][0] SW
                 if (this.list[1][0] == null) { // white
                     // do nothing
                 } else { // gray or black
                     this.list[1][0].nearestNeighbor(anchor, n);
-                    // check if other three are in range
-                    if (nwDist <= n.getBestDist()) {
-                        // visit
-                        this.list[0][0].nearestNeighbor(anchor, n);
-                    }
-                    if (neDist <= n.getBestDist()) {
-                        // visit
-                        this.list[0][1].nearestNeighbor(anchor, n);
-                    }
-                    if (seDist <= n.getBestDist()) {
-                        // visit
-                        this.list[1][1].nearestNeighbor(anchor, n);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[0][0].nearestNeighbor(anchor, n);
+                }
+                if (this.list[0][1] != null && (nwDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[0][1].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][1] != null && (seDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    // visit
+                    this.list[1][1].nearestNeighbor(anchor, n);
                 }
             }
         } else { // point is right of centroid
@@ -473,32 +473,32 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[0][1].nearestNeighbor(anchor, n);
-                    // check if other three are in range
-                    if (nwDist <= n.getBestDist()) {
-                        this.list[0][0].nearestNeighbor(anchor, n);
-                    }
-                    if (swDist <= n.getBestDist()) {
-                        this.list[1][0].nearestNeighbor(anchor, n);
-                    }
-                    if (seDist <= n.getBestDist()) {
-                        this.list[1][1].nearestNeighbor(anchor, n);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[0][0].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][0] != null && (swDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[1][0].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][1] != null && (seDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[1][1].nearestNeighbor(anchor, n);
                 }
             } else { // point is below [1][1] SE
                 if (this.list[1][1] == null) { // white
                     // do nothing
                 } else { // gray or black
                     this.list[1][1].nearestNeighbor(anchor, n);
-                    // check if other three are in range
-                    if (nwDist <= n.getBestDist()) {
-                        this.list[0][0].nearestNeighbor(anchor, n);
-                    }
-                    if (neDist <= n.getBestDist()) {
-                        this.list[0][1].nearestNeighbor(anchor, n);
-                    }
-                    if (swDist <= n.getBestDist()) {
-                        this.list[1][0].nearestNeighbor(anchor, n);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[0][0].nearestNeighbor(anchor, n);
+                }
+                if (this.list[0][1] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[0][1].nearestNeighbor(anchor, n);
+                }
+                if (this.list[1][0] != null && (swDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                    this.list[1][0].nearestNeighbor(anchor, n);
                 }
             }
         }

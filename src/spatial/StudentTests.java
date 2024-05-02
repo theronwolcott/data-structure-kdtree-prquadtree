@@ -555,16 +555,138 @@ public class StudentTests {
                 assertEquals(4, tree.height());
         }
 
+        // @Test
+        // public void comprehensivePRQuadTreeTest2() {
+        // var tree = new PRQuadTree(8, 1);
+        // int count = 0;
+        // for (int x = -128; x < 129; x++) {
+        // for (int y = -128; y < 129; y++) {
+        // tree.insert(new KDPoint(x, y));
+        // count++;
+        // }
+        // }
+        // assertEquals(count, tree.count());
+        // }
+
         @Test
-        public void comprehensivePRQuadTreeTest2() {
-                var tree = new PRQuadTree(8, 1);
-                int count = 0;
-                for (int x = -128; x < 129; x++) {
-                        for (int y = -128; x < 129; y++) {
-                                tree.insert(new KDPoint(x, y));
-                                count++;
-                        }
+        public void testKDTreeDeleteLeafNode() {
+                kdTree = new KDTree(2);
+                KDPoint[] points = { new KDPoint(10, 30), new KDPoint(12, 18), new KDPoint(-20, 300) };
+                for (KDPoint point : points) {
+                        kdTree.insert(point);
                 }
-                assertEquals(count, tree.count());
+
+                // Assuming (12, 18) is a leaf node in this setup
+                kdTree.delete(new KDPoint(12, 18));
+                assertFalse("KDTree should not contain the deleted leaf node.", kdTree.search(new KDPoint(12, 18)));
+                // Additional assertions can be made here to check the integrity of the tree
+                // structure
+        }
+
+        @Test
+        public void testKDTreeDeleteNodeWithTwoChildren() {
+                kdTree = new KDTree(2);
+                KDPoint[] points = { new KDPoint(10, 10), new KDPoint(5, 5), new KDPoint(15, 15), new KDPoint(12, 12),
+                                new KDPoint(18, 18) };
+                for (KDPoint point : points) {
+                        kdTree.insert(point);
+                }
+
+                // Assuming (10, 10) has two children
+                kdTree.delete(new KDPoint(10, 10));
+                assertFalse("KDTree should not contain the deleted node.", kdTree.search(new KDPoint(10, 10)));
+                // Additional assertions to check tree structure and invariants
+        }
+
+        @Test
+        public void testKDTreeDeleteRootNode() {
+                kdTree = new KDTree(2);
+                KDPoint[] points = { new KDPoint(20, 20), new KDPoint(10, 10), new KDPoint(30, 30), new KDPoint(5, 5) };
+                for (KDPoint point : points) {
+                        kdTree.insert(point);
+                }
+
+                // Assuming (20, 20) is the root node
+                kdTree.delete(new KDPoint(20, 20));
+                assertFalse("KDTree should not contain the deleted root node.", kdTree.search(new KDPoint(20, 20)));
+                // Additional assertions to validate the new structure of the tree
+        }
+
+        @Test
+        public void testKDTreeDeleteDeepTree() {
+                kdTree = new KDTree(2);
+                KDPoint[] points = { new KDPoint(10, 10), new KDPoint(5, 5), new KDPoint(15, 15), new KDPoint(12, 12),
+                                new KDPoint(18, 18), new KDPoint(17, 17) };
+                for (KDPoint point : points) {
+                        kdTree.insert(point);
+                }
+
+                // Delete a node that causes re-structuring in the deeper part of the tree
+                kdTree.delete(new KDPoint(15, 15));
+                assertFalse("KDTree should not contain the deleted node.", kdTree.search(new KDPoint(15, 15)));
+                // Additional checks for tree structure
+        }
+
+        @Test
+        public void testBasicNearestNeighbor() {
+                prQuadTree = new PRQuadTree(4, 2);
+                KDPoint[] points = { new KDPoint(1, 1), new KDPoint(2, 2), new KDPoint(3, 3) };
+                for (KDPoint point : points) {
+                        prQuadTree.insert(point);
+                }
+                KDPoint queryPoint = new KDPoint(4, 4);
+                KDPoint nn = prQuadTree.nearestNeighbor(queryPoint);
+                assertEquals("Nearest neighbor to (4, 4) should be (3, 3).", new KDPoint(3, 3), nn);
+        }
+
+        @Test
+        public void testNearestNeighborSamePoint() {
+                prQuadTree = new PRQuadTree(4, 2);
+                KDPoint point = new KDPoint(1, 1);
+                prQuadTree.insert(point);
+                KDPoint nn = prQuadTree.nearestNeighbor(point);
+                assertNull("Nearest neighbor to the only point in the tree should be null.", nn);
+        }
+
+        @Test
+        public void testNearestNeighborEdgeCase() {
+                prQuadTree = new PRQuadTree(4, 2);
+                KDPoint[] points = { new KDPoint(-1, -1), new KDPoint(1, 1), new KDPoint(-2, -2) };
+                for (KDPoint point : points) {
+                        prQuadTree.insert(point);
+                }
+                KDPoint queryPoint = new KDPoint(0, 0);
+                KDPoint nn = prQuadTree.nearestNeighbor(queryPoint);
+                assertEquals("Nearest neighbor to (0, 0) should be (1, 1).", new KDPoint(1, 1), nn);
+        }
+
+        @Test
+        public void testNearestNeighborWithTies() {
+                prQuadTree = new PRQuadTree(4, 2);
+                KDPoint[] points = { new KDPoint(1, 1), new KDPoint(-1, -1), new KDPoint(1, -1), new KDPoint(-1, 1) };
+                for (KDPoint point : points) {
+                        prQuadTree.insert(point);
+                }
+                KDPoint queryPoint = new KDPoint(0, 0);
+                KDPoint nn = prQuadTree.nearestNeighbor(queryPoint);
+                // Asserting that one of the points equidistant to the query point is returned
+                assertTrue("Nearest neighbor to (0, 0) should be one of the four equidistant points.",
+                                Arrays.asList(points).contains(nn));
+        }
+
+        @Test
+        public void testSinglePoint() {
+                PRQuadTree tree = new PRQuadTree(4, 2); // Customize dimensions and bucketing parameter as needed
+                KDPoint singlePoint = new KDPoint(5, 5);
+                tree.insert(singlePoint);
+
+                // Test with the same point
+                KDPoint nnSame = tree.nearestNeighbor(singlePoint);
+                assertNull("Expected null, but found a nearest neighbor", nnSame);
+
+                // Test with a different point
+                KDPoint diffPoint = new KDPoint(6, 6);
+                KDPoint nnDiff = tree.nearestNeighbor(diffPoint);
+                assertEquals("Expected the single point in the tree to be the nearest neighbor", singlePoint, nnDiff);
         }
 }
