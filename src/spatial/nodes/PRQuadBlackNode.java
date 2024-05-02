@@ -4,6 +4,7 @@ import spatial.exceptions.UnimplementedMethodException;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
 import spatial.knnutils.NNData;
+import spatial.trees.CentroidAccuracyException;
 import spatial.trees.PRQuadTree;
 
 import java.util.ArrayList;
@@ -132,10 +133,13 @@ public class PRQuadBlackNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode insert(KDPoint p, int k) {
-        if (this.list.size() < this.bucketingParam || k == 1) { // list is not full, add to list
+        if (this.list.size() < this.bucketingParam) { // list is not full, add to list
             list.add(p);
             return this;
         } else { // list is full, make new gray, insert for each point, return it
+            if (k == 1) {
+                throw new CentroidAccuracyException("Cannot split");
+            }
             PRQuadGrayNode newGray = new PRQuadGrayNode(this.centroid, this.k, this.bucketingParam);
             for (KDPoint point : this.list) {
                 newGray.insert(point, k);
