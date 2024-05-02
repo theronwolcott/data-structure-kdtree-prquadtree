@@ -85,7 +85,7 @@ public class KDTreeNode {
         insert(this, pIn, currDim, dims);
     }
 
-    public static KDTreeNode insert(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
+    private static KDTreeNode insert(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
         if (node == null) {
             return new KDTreeNode(pIn);
         }
@@ -137,7 +137,7 @@ public class KDTreeNode {
         return delete(this, pIn, currDim, dims);
     }
 
-    public static KDTreeNode delete(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
+    private static KDTreeNode delete(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
         if (node == null) {
             return null;
         }
