@@ -555,6 +555,7 @@ public class StudentTests {
                 assertEquals(4, tree.height());
         }
 
+        // SHOULD THROW EXCEPTION
         // @Test
         // public void comprehensivePRQuadTreeTest2() {
         // var tree = new PRQuadTree(8, 1);

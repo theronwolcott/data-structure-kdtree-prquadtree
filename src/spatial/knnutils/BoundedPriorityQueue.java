@@ -1,6 +1,8 @@
 package spatial.knnutils;
 
+import java.util.ConcurrentModificationException;
 import java.util.Iterator;
+import java.util.List;
 import java.util.TreeSet;
 
 import spatial.exceptions.UnimplementedMethodException;
@@ -142,7 +144,22 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 
 	@Override
 	public Iterator<T> iterator() {
-		var list = set.stream().map(node -> node.getData()).toList();
-		return list.iterator();
+		return new Iterator<T>() {
+			List<T> list = set.stream().map(node -> node.getData()).toList();
+			Iterator<T> it = list.iterator();
+
+			@Override
+			public boolean hasNext() {
+				return it.hasNext();
+			}
+
+			@Override
+			public T next() {
+				if (set.size() != list.size()) {
+					throw new ConcurrentModificationException();
+				}
+				return it.next();
+			}
+		};
 	}
 }
