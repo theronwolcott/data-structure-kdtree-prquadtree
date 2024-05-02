@@ -236,14 +236,14 @@ public class PRQuadBlackNode extends PRQuadNode {
         for (KDPoint point : this.list) {
             double dist = point.euclideanDistance(anchor);
 
-            if (dist < calcDistance(anchor, queue) && !point.equals(anchor)) {
+            if (dist < calcDistance(anchor, queue, k) && !point.equals(anchor)) {
                 queue.enqueue(point, dist);
             }
         }
     }
 
-    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue) {
-        if (queue.size() < queue.getCapacity()) {
+    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+        if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }
         return queue.last().euclideanDistance(anchor);

@@ -145,12 +145,4 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 		var list = set.stream().map(node -> node.getData()).toList();
 		return list.iterator();
 	}
-
-	public int getCounter() {
-		return counter;
-	}
-
-	public int getCapacity() {
-		return capacity;
-	}
 }

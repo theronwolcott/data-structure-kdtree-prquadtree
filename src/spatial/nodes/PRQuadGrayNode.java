@@ -515,7 +515,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                 : nearestPointOnSquare(k, this.list[1][0].centroid, anchor).euclideanDistance(anchor);
         double seDist = (this.list[1][1] == null) ? Double.MAX_VALUE
                 : nearestPointOnSquare(k, this.list[1][1].centroid, anchor).euclideanDistance(anchor);
-        double qDist = calcDistance(anchor, queue);
+        double qDist = calcDistance(anchor, queue, k);
 
         if (anchor.coords[0] < this.centroid.coords[0]) { // point is left of centroid
             if (anchor.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
@@ -523,7 +523,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[0][0].kNearestNeighbors(k, anchor, queue);
-                    qDist = calcDistance(anchor, queue);
+                    qDist = calcDistance(anchor, queue, k);
                     // check if other three are in range
                     if (neDist <= qDist && this.list[0][1] != null) {
                         this.list[0][1].kNearestNeighbors(k, anchor, queue);
@@ -540,7 +540,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[1][0].kNearestNeighbors(k, anchor, queue);
-                    qDist = calcDistance(anchor, queue);
+                    qDist = calcDistance(anchor, queue, k);
                     // check if other three are in range
                     if (nwDist <= qDist && this.list[0][0] != null) {
                         this.list[0][0].kNearestNeighbors(k, anchor, queue);
@@ -559,7 +559,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[0][1].kNearestNeighbors(k, anchor, queue);
-                    qDist = calcDistance(anchor, queue);
+                    qDist = calcDistance(anchor, queue, k);
                     // check if other three are in range
                     if (nwDist <= qDist && this.list[0][0] != null) {
                         this.list[0][0].kNearestNeighbors(k, anchor, queue);
@@ -576,7 +576,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[1][1].kNearestNeighbors(k, anchor, queue);
-                    qDist = calcDistance(anchor, queue);
+                    qDist = calcDistance(anchor, queue, k);
                     // check if other three are in range
                     if (nwDist <= qDist && this.list[0][0] != null) {
                         this.list[0][0].kNearestNeighbors(k, anchor, queue);
@@ -619,8 +619,8 @@ public class PRQuadGrayNode extends PRQuadNode {
         return new KDPoint((int) closestX, (int) closestY);
     }
 
-    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue) {
-        if (queue.size() < queue.getCapacity()) {
+    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+        if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }
         return queue.last().euclideanDistance(anchor);

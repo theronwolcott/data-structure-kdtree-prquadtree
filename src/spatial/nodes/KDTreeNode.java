@@ -419,25 +419,25 @@ public class KDTreeNode {
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
-        if (dist < calcDistance(anchor, queue) && !node.p.equals(anchor)) {
+        if (dist < calcDistance(anchor, queue, k) && !node.p.equals(anchor)) {
             queue.enqueue(node.p, dist);
         }
 
         if (anchor.coords[currDim] < node.p.coords[currDim]) {
             kNearestNeighbors(node.left, k, anchor, queue, nextDim, dims);
-            if (diff < calcDistance(anchor, queue)) {
+            if (diff < calcDistance(anchor, queue, k)) {
                 kNearestNeighbors(node.right, k, anchor, queue, nextDim, dims);
             }
         } else {
             kNearestNeighbors(node.right, k, anchor, queue, nextDim, dims);
-            if (diff < calcDistance(anchor, queue)) {
+            if (diff < calcDistance(anchor, queue, k)) {
                 kNearestNeighbors(node.left, k, anchor, queue, nextDim, dims);
             }
         }
     }
 
-    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue) {
-        if (queue.size() < queue.getCapacity()) {
+    private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+        if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }
         return queue.last().euclideanDistance(anchor);
