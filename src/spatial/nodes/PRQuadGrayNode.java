@@ -339,38 +339,39 @@ public class PRQuadGrayNode extends PRQuadNode {
                     // do nothing
                 } else { // gray or black
                     this.list[0][0].range(anchor, results, range);
-                    // check if other three are in range
-                    if (neDist <= range) {
-                        // visit
-                        this.list[0][1].range(anchor, results, range);
-                    }
-                    if (swDist <= range) {
-                        // visit
-                        this.list[1][0].range(anchor, results, range);
-                    }
-                    if (seDist <= range) {
-                        // visit
-                        this.list[1][1].range(anchor, results, range);
-                    }
+                }
+                // check if other three are in range
+                if (neDist <= range) {
+                    // visit
+                    this.list[0][1].range(anchor, results, range);
+                }
+                if (swDist <= range) {
+                    // visit
+                    this.list[1][0].range(anchor, results, range);
+                }
+                if (seDist <= range) {
+                    // visit
+                    this.list[1][1].range(anchor, results, range);
                 }
             } else { // point is below centroid [1][0] SW
                 if (this.list[1][0] == null) { // white
                     // do nothing
                 } else { // gray or black
                     this.list[1][0].range(anchor, results, range);
-                    // check if other three are in range
-                    if (nwDist <= range) {
-                        // visit
-                        this.list[0][0].range(anchor, results, range);
-                    }
-                    if (neDist <= range) {
-                        // visit
-                        this.list[0][1].range(anchor, results, range);
-                    }
-                    if (seDist <= range) {
-                        // visit
-                        this.list[1][1].range(anchor, results, range);
-                    }
+
+                }
+                // check if other three are in range
+                if (nwDist <= range) {
+                    // visit
+                    this.list[0][0].range(anchor, results, range);
+                }
+                if (neDist <= range) {
+                    // visit
+                    this.list[0][1].range(anchor, results, range);
+                }
+                if (seDist <= range) {
+                    // visit
+                    this.list[1][1].range(anchor, results, range);
                 }
             }
         } else { // point is right of centroid
@@ -379,38 +380,38 @@ public class PRQuadGrayNode extends PRQuadNode {
                     return;
                 } else { // gray or black
                     this.list[0][1].range(anchor, results, range);
-                    // check if other three are in range
-                    if (nwDist <= range) {
-                        // visit
-                        this.list[0][0].range(anchor, results, range);
-                    }
-                    if (swDist <= range) {
-                        // visit
-                        this.list[1][0].range(anchor, results, range);
-                    }
-                    if (seDist <= range) {
-                        // visit
-                        this.list[1][1].range(anchor, results, range);
-                    }
+                }
+                // check if other three are in range
+                if (nwDist <= range) {
+                    // visit
+                    this.list[0][0].range(anchor, results, range);
+                }
+                if (swDist <= range) {
+                    // visit
+                    this.list[1][0].range(anchor, results, range);
+                }
+                if (seDist <= range) {
+                    // visit
+                    this.list[1][1].range(anchor, results, range);
                 }
             } else { // point is below [1][1] SE
                 if (this.list[1][1] == null) { // white
                     return;
                 } else { // gray or black
                     this.list[1][1].range(anchor, results, range);
-                    // check if other three are in range
-                    if (nwDist <= range) {
-                        // visit
-                        this.list[0][0].range(anchor, results, range);
-                    }
-                    if (neDist <= range) {
-                        // visit
-                        this.list[0][1].range(anchor, results, range);
-                    }
-                    if (swDist <= range) {
-                        // visit
-                        this.list[1][0].range(anchor, results, range);
-                    }
+                }
+                // check if other three are in range
+                if (nwDist <= range) {
+                    // visit
+                    this.list[0][0].range(anchor, results, range);
+                }
+                if (neDist <= range) {
+                    // visit
+                    this.list[0][1].range(anchor, results, range);
+                }
+                if (swDist <= range) {
+                    // visit
+                    this.list[1][0].range(anchor, results, range);
                 }
             }
         }
