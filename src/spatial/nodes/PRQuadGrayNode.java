@@ -524,16 +524,16 @@ public class PRQuadGrayNode extends PRQuadNode {
                 } else { // gray or black
                     this.list[0][0].kNearestNeighbors(k, anchor, queue);
                     qDist = calcDistance(anchor, queue, k);
-                    // check if other three are in range
-                    if (neDist <= qDist && this.list[0][1] != null) {
-                        this.list[0][1].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (swDist <= qDist && this.list[1][0] != null) {
-                        this.list[1][0].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (seDist <= qDist && this.list[1][1] != null) {
-                        this.list[1][1].kNearestNeighbors(k, anchor, queue);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][1] != null && (neDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][1].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][0] != null && (swDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][0].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][1] != null && (seDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][1].kNearestNeighbors(k, anchor, queue);
                 }
             } else { // point is below centroid [1][0] SW
                 if (this.list[1][0] == null) { // white
@@ -541,16 +541,16 @@ public class PRQuadGrayNode extends PRQuadNode {
                 } else { // gray or black
                     this.list[1][0].kNearestNeighbors(k, anchor, queue);
                     qDist = calcDistance(anchor, queue, k);
-                    // check if other three are in range
-                    if (nwDist <= qDist && this.list[0][0] != null) {
-                        this.list[0][0].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (neDist <= qDist && this.list[0][1] != null) {
-                        this.list[0][1].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (seDist <= qDist && this.list[1][1] != null) {
-                        this.list[1][1].kNearestNeighbors(k, anchor, queue);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (nwDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][0].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[0][1] != null && (neDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][1].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][1] != null && (seDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][1].kNearestNeighbors(k, anchor, queue);
                 }
             }
         } else { // point is right of centroid
@@ -560,16 +560,16 @@ public class PRQuadGrayNode extends PRQuadNode {
                 } else { // gray or black
                     this.list[0][1].kNearestNeighbors(k, anchor, queue);
                     qDist = calcDistance(anchor, queue, k);
-                    // check if other three are in range
-                    if (nwDist <= qDist && this.list[0][0] != null) {
-                        this.list[0][0].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (swDist <= qDist && this.list[1][0] != null) {
-                        this.list[1][0].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (seDist <= qDist && this.list[1][1] != null) {
-                        this.list[1][1].kNearestNeighbors(k, anchor, queue);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (nwDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][0].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][0] != null && (swDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][0].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][1] != null && (seDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][1].kNearestNeighbors(k, anchor, queue);
                 }
             } else { // point is below [1][1] SE
                 if (this.list[1][1] == null) { // white
@@ -577,16 +577,16 @@ public class PRQuadGrayNode extends PRQuadNode {
                 } else { // gray or black
                     this.list[1][1].kNearestNeighbors(k, anchor, queue);
                     qDist = calcDistance(anchor, queue, k);
-                    // check if other three are in range
-                    if (nwDist <= qDist && this.list[0][0] != null) {
-                        this.list[0][0].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (neDist <= qDist && this.list[0][1] != null) {
-                        this.list[0][1].kNearestNeighbors(k, anchor, queue);
-                    }
-                    if (swDist <= qDist && this.list[1][0] != null) {
-                        this.list[1][0].kNearestNeighbors(k, anchor, queue);
-                    }
+                }
+                // check if other three are in range
+                if (this.list[0][0] != null && (nwDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][0].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[0][1] != null && (neDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[0][1].kNearestNeighbors(k, anchor, queue);
+                }
+                if (this.list[1][0] != null && (swDist <= qDist || qDist == PRQuadTree.INFTY)) {
+                    this.list[1][0].kNearestNeighbors(k, anchor, queue);
                 }
             }
         }
