@@ -513,4 +513,40 @@ public class StudentTests {
         visualizer.drawBTreeToFile(kdDescription, 4, "compact_quadtree");
 
     }
+
+    @Test
+    public void comprehensivePRQuadTreeTest1() {
+        var tree = new PRQuadTree(8, 1);
+        KDPoint[] points = {
+                new KDPoint(100, 125),
+                new KDPoint(25, -30),
+                new KDPoint(-55, 80),
+                new KDPoint(125, -60),
+                new KDPoint(80, 80), // kills it
+                new KDPoint(-80, -8),
+                new KDPoint(-12, -112),
+                new KDPoint(-48, -112),
+                new KDPoint(16, 72),
+                new KDPoint(60, 100),
+                new KDPoint(48, 48),
+                new KDPoint(36, 8),
+                new KDPoint(4, 60),
+                new KDPoint(28, 30),
+                new KDPoint(125, 125),
+                new KDPoint(128, 128)
+        };
+        for (int i = 0; i < points.length; i++) {
+            tree.insert(points[i]);
+            assertEquals(i + 1, tree.count());
+            assertTrue(tree.search(points[i]));
+        }
+        assertEquals(points.length, tree.count());
+        assertEquals(7, tree.height());
+        tree.delete(new KDPoint(128, 128));
+        assertEquals(points.length - 1, tree.count());
+        assertEquals(7, tree.height());
+        tree.delete(new KDPoint(125, 125));
+        assertEquals(points.length - 2, tree.count());
+        assertEquals(4, tree.height());
+    }
 }
