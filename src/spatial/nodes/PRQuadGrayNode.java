@@ -193,59 +193,65 @@ public class PRQuadGrayNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode delete(KDPoint p) {
-        if (this.search(p) == false) {
-            return this;
-        }
-        if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
-                if (this.list[0][0] == null) { // white
-                    return null;
-                } else { // gray or black
-                    this.list[0][0] = this.list[0][0].delete(p);
-                    // check if all 4 children are null now
-                    if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
-                            && this.list[1][1] == null) {
-                        return null;
-                    }
-                }
-            } else { // point is below centroid [1][0] SW
-                if (this.list[1][0] == null) { // white
-                    return null;
-                } else { // gray or black
-                    this.list[1][0] = this.list[1][0].delete(p);
-                    // check if all 4 children are null now
-                    if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
-                            && this.list[1][1] == null) {
-                        return null;
-                    }
-                }
-            }
-        } else { // point is right of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
-                if (this.list[0][1] == null) { // white
-                    return null;
-                } else { // gray or black
-                    this.list[0][1] = this.list[0][1].delete(p);
-                    // check if all 4 children are null now
-                    if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
-                            && this.list[1][1] == null) {
-                        return null;
-                    }
-                }
-            } else { // point is below [1][1] SE
-                if (this.list[1][1] == null) { // white
-                    return null;
-                } else { // gray or black
-                    this.list[1][1] = this.list[1][1].delete(p);
-                    // check if all 4 children are null now
-                    if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
-                            && this.list[1][1] == null) {
-                        return null;
-                    }
-                }
-            }
-        }
-        return this;
+        // if (this.search(p) == false) {
+        // return this;
+        // }
+        // if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
+        // if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid
+        // [0][0] NW
+        // if (this.list[0][0] == null) { // white
+        // return null;
+        // } else { // gray or black
+        // this.list[0][0] = this.list[0][0].delete(p);
+        // // check if all 4 children are null now
+        // if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] ==
+        // null
+        // && this.list[1][1] == null) {
+        // return null;
+        // }
+        // }
+        // } else { // point is below centroid [1][0] SW
+        // if (this.list[1][0] == null) { // white
+        // return null;
+        // } else { // gray or black
+        // this.list[1][0] = this.list[1][0].delete(p);
+        // // check if all 4 children are null now
+        // if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] ==
+        // null
+        // && this.list[1][1] == null) {
+        // return null;
+        // }
+        // }
+        // }
+        // } else { // point is right of centroid
+        // if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
+        // if (this.list[0][1] == null) { // white
+        // return null;
+        // } else { // gray or black
+        // this.list[0][1] = this.list[0][1].delete(p);
+        // // check if all 4 children are null now
+        // if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] ==
+        // null
+        // && this.list[1][1] == null) {
+        // return null;
+        // }
+        // }
+        // } else { // point is below [1][1] SE
+        // if (this.list[1][1] == null) { // white
+        // return null;
+        // } else { // gray or black
+        // this.list[1][1] = this.list[1][1].delete(p);
+        // // check if all 4 children are null now
+        // if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] ==
+        // null
+        // && this.list[1][1] == null) {
+        // return null;
+        // }
+        // }
+        // }
+        // }
+        // return this;
+        return null;
     }
 
     @Override

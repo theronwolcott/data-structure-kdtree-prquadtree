@@ -172,17 +172,17 @@ public class PRQuadBlackNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode delete(KDPoint p) {
-        if (this.list.contains(p)) {
-            if (this.list.size() > 1) { // p isn't last node in list, remove it
-                list.remove(p);
-                return this;
-            } else { // last point in list,
-                return null;
-            }
-        } else {
-            return this;
-        }
-
+        // if (this.list.contains(p)) {
+        // if (this.list.size() > 1) { // p isn't last node in list, remove it
+        // list.remove(p);
+        // return this;
+        // } else { // last point in list,
+        // return null;
+        // }
+        // } else {
+        // return this;
+        // }
+        return null;
     }
 
     @Override
