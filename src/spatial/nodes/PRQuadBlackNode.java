@@ -133,20 +133,23 @@ public class PRQuadBlackNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode insert(KDPoint p, int k) {
-        if (this.list.size() < this.bucketingParam) { // list is not full, add to list
-            list.add(p);
-            return this;
-        } else { // list is full, make new gray, insert for each point, return it
-            if (k == 1) {
-                throw new CentroidAccuracyException("Cannot split");
-            }
-            PRQuadGrayNode newGray = new PRQuadGrayNode(this.centroid, this.k, this.bucketingParam);
-            for (KDPoint point : this.list) {
-                newGray.insert(point, k);
-            }
-            newGray.insert(p, k);
-            return newGray;
-        }
+        // if (this.list.size() < this.bucketingParam) { // list is not full, add to
+        // list
+        // list.add(p);
+        // return this;
+        // } else { // list is full, make new gray, insert for each point, return it
+        // if (k == 1) {
+        // throw new CentroidAccuracyException("Cannot split");
+        // }
+        // PRQuadGrayNode newGray = new PRQuadGrayNode(this.centroid, this.k,
+        // this.bucketingParam);
+        // for (KDPoint point : this.list) {
+        // newGray.insert(point, k);
+        // }
+        // newGray.insert(p, k);
+        // return newGray;
+        // }
+        return null;
     }
 
     /**
