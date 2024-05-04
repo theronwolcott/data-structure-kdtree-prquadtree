@@ -201,7 +201,10 @@ public class PRQuadGrayNode extends PRQuadNode {
                             && this.list[1][1] == null) {
                         return null;
                     }
+                    // check if we can fit everyone into a new black node
+                    return newBlackMerge(this);
                 }
+
             } else { // point is below centroid [1][0] SW
                 if (this.list[1][0] == null) { // white
                     return null;
@@ -212,6 +215,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                             && this.list[1][1] == null) {
                         return null;
                     }
+                    return newBlackMerge(this);
                 }
             }
         } else { // point is right of centroid
@@ -225,6 +229,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                             && this.list[1][1] == null) {
                         return null;
                     }
+                    return newBlackMerge(this);
                 }
             } else { // point is below [1][1] SE
                 if (this.list[1][1] == null) { // white
@@ -236,10 +241,36 @@ public class PRQuadGrayNode extends PRQuadNode {
                             && this.list[1][1] == null) {
                         return null;
                     }
+                    return newBlackMerge(this);
                 }
             }
         }
-        return this;
+    }
+
+    private static PRQuadNode newBlackMerge(PRQuadGrayNode node) {
+        if (node.count() <= node.bucketingParam) {
+            PRQuadBlackNode n = new PRQuadBlackNode(node.centroid, node.k,
+                    node.bucketingParam);
+            for (int x = 0; x < 2; x++) {
+                for (int y = 0; y < 2; y++) {
+                    if ((node.list[x][y] != null && node.list[x][y] instanceof PRQuadBlackNode)
+                            || node.list[x][y] == null) {
+                        if (node.list[x][y] == null) {
+                            // do nothing
+                            continue;
+                        }
+                        PRQuadBlackNode black = (PRQuadBlackNode) node.list[x][y];
+                        for (KDPoint blackP : (black.list)) {
+                            n.insert(blackP, n.k);
+                        }
+                    } else {
+                        return node;
+                    }
+                }
+            }
+            return n;
+        }
+        return node;
     }
 
     @Override
@@ -476,7 +507,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     this.list[0][1].nearestNeighbor(anchor, n);
                 }
                 // check if other three are in range
-                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                if (this.list[0][0] != null && (nwDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
                     this.list[0][0].nearestNeighbor(anchor, n);
                 }
                 if (this.list[1][0] != null && (swDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
@@ -601,20 +632,20 @@ public class PRQuadGrayNode extends PRQuadNode {
 
         double left = centroid.coords[0] - length;
         double right = centroid.coords[0] + length;
-        double top = centroid.coords[0] + length;
-        double bottom = centroid.coords[0] - length;
+        double top = centroid.coords[1] + length;
+        double bottom = centroid.coords[1] - length;
 
         double closestX = Math.max(left, Math.min(right, anchor.coords[0]));
         double closestY = Math.max(bottom, Math.min(top, anchor.coords[1]));
 
-        // Determine if the anchor is closer to vertical or horizontal sides
-        if (closestX == anchor.coords[0]) {
-            // Anchor vertically aligns with the square, adjust y
-            closestY = (anchor.coords[1] < centroid.coords[1]) ? bottom : top;
-        } else if (closestY == anchor.coords[1]) {
-            // Anchor horizontally aligns with the square, adjust x
-            closestX = (anchor.coords[0] < centroid.coords[0]) ? left : right;
-        }
+        // // Determine if the anchor is closer to vertical or horizontal sides
+        // if (closestX == anchor.coords[0]) {
+        // // Anchor vertically aligns with the square, adjust y
+        // closestY = (anchor.coords[1] < centroid.coords[1]) ? bottom : top;
+        // } else if (closestY == anchor.coords[1]) {
+        // // Anchor horizontally aligns with the square, adjust x
+        // closestX = (anchor.coords[0] < centroid.coords[0]) ? left : right;
+        // }
 
         // Create the closest point on the perimeter
         return new KDPoint((int) closestX, (int) closestY);

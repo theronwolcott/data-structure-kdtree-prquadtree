@@ -6,6 +6,9 @@ import org.junit.Test;
 import spatial.kdpoint.InvalidDimensionalityException;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
+import spatial.nodes.PRQuadBlackNode;
+import spatial.nodes.PRQuadGrayNode;
+import spatial.nodes.PRQuadNode;
 import spatial.trees.KDTree;
 import spatial.trees.PRQuadTree;
 import visualization.CompactVizTree;
@@ -689,5 +692,29 @@ public class StudentTests {
                 KDPoint diffPoint = new KDPoint(6, 6);
                 KDPoint nnDiff = tree.nearestNeighbor(diffPoint);
                 assertEquals("Expected the single point in the tree to be the nearest neighbor", singlePoint, nnDiff);
+        }
+
+        @Test
+        public void testBPQIterator() {
+                BoundedPriorityQueue<KDPoint> queue = new BoundedPriorityQueue<>(4);
+                queue.enqueue(new KDPoint(1, 1), 1);
+                queue.enqueue(new KDPoint(2, 2), 2);
+                queue.enqueue(new KDPoint(3, 3), 3);
+                queue.enqueue(new KDPoint(4, 4), 4);
+                for (int i = 0; i < 4; i++) {
+                        assertTrue(queue.iterator().hasNext());
+                }
+
+        }
+
+        @Test
+        public void testBlackMerge() {
+                PRQuadNode black = new PRQuadBlackNode(new KDPoint(0, 0), 3, 1);
+                black = black.insert(new KDPoint(1, 1), 3);
+                black = black.insert(new KDPoint(-1, -1), 3);
+                assertTrue(black.getClass().toString().contains("PRQuadGrayNode"));
+                black = black.delete(new KDPoint(1, 1));
+                assertTrue(black.getClass().toString().contains("PRQuadBlackNode"));
+
         }
 }

@@ -39,7 +39,7 @@ public class PRQuadBlackNode extends PRQuadNode {
     /* ******************************************************************** */
     /* ************* PLACE ANY PRIVATE FIELDS AND METHODS HERE: ************ */
     /* ********************************************************************** */
-    private ArrayList<KDPoint> list;
+    public ArrayList<KDPoint> list;
     /* *********************************************************************** */
     /* *************** IMPLEMENT THE FOLLOWING PUBLIC METHODS: ************ */
     /* *********************************************************************** */

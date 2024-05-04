@@ -1,5 +1,6 @@
 package spatial.knnutils;
 
+import java.util.ArrayList;
 import java.util.ConcurrentModificationException;
 import java.util.Iterator;
 import java.util.List;
@@ -161,6 +162,30 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 		// return it.next();
 		// }
 		// };
-		return null;
+		return new Iterator<T>() {
+			private int currIndex = 0;
+			int counterCheck = counter;
+
+			@Override
+			public boolean hasNext() {
+				if (counterCheck != counter) {
+					throw new ConcurrentModificationException();
+				}
+				return currIndex < set.size();
+			}
+
+			public T next() {
+				ArrayList<PriorityQueueNode<T>> arr = new ArrayList<PriorityQueueNode<T>>();
+
+				for (PriorityQueueNode<T> node : set) {
+					arr.add(node);
+				}
+				if (counterCheck != counter) {
+					throw new ConcurrentModificationException();
+				}
+				currIndex++;
+				return arr.get(currIndex).getData();
+			}
+		};
 	}
 }

@@ -4,6 +4,8 @@ import spatial.exceptions.UnimplementedMethodException;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
 import spatial.knnutils.NNData;
+import spatial.trees.KDTree;
+import spatial.trees.PRQuadTree;
 
 import java.util.Collection;
 
@@ -278,7 +280,7 @@ public class KDTreeNode {
             // recurse right
             range(node.right, anchor, results, range, nextDim, dims);
         }
-        if (node.p.euclideanDistance(anchor) <= range) {
+        if (node.p.euclideanDistance(anchor) <= range /* && !node.p.equals(anchor) */) {
             results.add(node.p);
         }
 
@@ -341,7 +343,7 @@ public class KDTreeNode {
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
-        if (dist < n.getBestDist() || n.getBestDist() < 0 && !node.p.equals(anchor)) {
+        if ((dist < n.getBestDist() || n.getBestDist() == KDTree.INFTY) && !node.p.equals(anchor)) {
             n.update(node.p, dist);
         }
 
