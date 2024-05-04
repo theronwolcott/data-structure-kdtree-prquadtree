@@ -4,8 +4,6 @@ import spatial.exceptions.UnimplementedMethodException;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
 import spatial.knnutils.NNData;
-import spatial.trees.KDTree;
-import spatial.trees.PRQuadTree;
 
 import java.util.Collection;
 
@@ -272,15 +270,15 @@ public class KDTreeNode {
         var nextDim = (currDim + 1) % dims;
         double diff = Math.abs(anchor.coords[currDim] - range);
 
-        if ((anchor.coords[currDim] - diff) <= node.p.coords[currDim]) {
+        if ((anchor.coords[currDim] - range) <= node.p.coords[currDim]) {
             // recurse left
             range(node.left, anchor, results, range, nextDim, dims);
         }
-        if ((anchor.coords[currDim] + diff) >= node.p.coords[currDim]) {
+        if ((anchor.coords[currDim] + range) >= node.p.coords[currDim]) {
             // recurse right
             range(node.right, anchor, results, range, nextDim, dims);
         }
-        if (node.p.euclideanDistance(anchor) <= range /* && !node.p.equals(anchor) */) {
+        if (node.p.euclideanDistance(anchor) <= range && !node.p.equals(anchor)) {
             results.add(node.p);
         }
 
@@ -343,7 +341,7 @@ public class KDTreeNode {
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
-        if ((dist < n.getBestDist() || n.getBestDist() == KDTree.INFTY) && !node.p.equals(anchor)) {
+        if ((dist < n.getBestDist() || n.getBestDist() < 0) && !node.p.equals(anchor)) {
             n.update(node.p, dist);
         }
 

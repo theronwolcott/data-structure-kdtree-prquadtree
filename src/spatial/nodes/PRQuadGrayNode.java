@@ -273,6 +273,32 @@ public class PRQuadGrayNode extends PRQuadNode {
         return node;
     }
 
+    // private static PRQuadNode newBlackMerge(PRQuadGrayNode node) {
+    // if (node.count() <= node.bucketingParam) {
+    // PRQuadBlackNode n = new PRQuadBlackNode(node.centroid, node.k,
+    // node.bucketingParam);
+    // for (int x = 0; x < 2; x++) {
+    // for (int y = 0; y < 2; y++) {
+    // if ((node.list[x][y] != null && node.list[x][y] instanceof PRQuadBlackNode)
+    // || node.list[x][y] == null) {
+    // if (node.list[x][y] == null) {
+    // // do nothing
+    // continue;
+    // }
+    // PRQuadBlackNode black = (PRQuadBlackNode) node.list[x][y];
+    // for (KDPoint blackP : (black.list)) {
+    // n.insert(blackP, n.k);
+    // }
+    // } else {
+    // return node;
+    // }
+    // }
+    // }
+    // return n;
+    // }
+    // return node;
+    // }
+
     @Override
     public boolean search(KDPoint p) {
         if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
@@ -486,11 +512,11 @@ public class PRQuadGrayNode extends PRQuadNode {
                     this.list[1][0].nearestNeighbor(anchor, n);
                 }
                 // check if other three are in range
-                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                if (this.list[0][0] != null && (nwDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
                     // visit
                     this.list[0][0].nearestNeighbor(anchor, n);
                 }
-                if (this.list[0][1] != null && (nwDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                if (this.list[0][1] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
                     // visit
                     this.list[0][1].nearestNeighbor(anchor, n);
                 }
@@ -523,7 +549,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                     this.list[1][1].nearestNeighbor(anchor, n);
                 }
                 // check if other three are in range
-                if (this.list[0][0] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
+                if (this.list[0][0] != null && (nwDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {
                     this.list[0][0].nearestNeighbor(anchor, n);
                 }
                 if (this.list[0][1] != null && (neDist <= n.getBestDist() || n.getBestDist() == PRQuadTree.INFTY)) {

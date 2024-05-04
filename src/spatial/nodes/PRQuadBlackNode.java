@@ -137,7 +137,7 @@ public class PRQuadBlackNode extends PRQuadNode {
             list.add(p);
             return this;
         } else { // list is full, make new gray, insert for each point, return it
-            if (k == 1) {
+            if (k < 1) {
                 throw new CentroidAccuracyException("Cannot split");
             }
             PRQuadGrayNode newGray = new PRQuadGrayNode(this.centroid, this.k, this.bucketingParam);
