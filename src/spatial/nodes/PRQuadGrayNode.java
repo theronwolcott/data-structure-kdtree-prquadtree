@@ -260,7 +260,7 @@ public class PRQuadGrayNode extends PRQuadNode {
                             continue;
                         }
                         PRQuadBlackNode black = (PRQuadBlackNode) node.list[x][y];
-                        for (KDPoint blackP : (black.list)) {
+                        for (KDPoint blackP : (black.getPoints())) {
                             n.insert(blackP, n.k);
                         }
                     } else {

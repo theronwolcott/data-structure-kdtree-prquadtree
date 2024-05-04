@@ -162,30 +162,32 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 		// return it.next();
 		// }
 		// };
-		return new Iterator<T>() {
-			private int currIndex = 0;
-			int counterCheck = counter;
 
-			@Override
-			public boolean hasNext() {
-				if (counterCheck != counter) {
-					throw new ConcurrentModificationException();
-				}
-				return currIndex < set.size();
-			}
+		// return new Iterator<T>() {
+		// private int currIndex = 0;
+		// int counterCheck = counter;
 
-			public T next() {
-				ArrayList<PriorityQueueNode<T>> arr = new ArrayList<PriorityQueueNode<T>>();
+		// @Override
+		// public boolean hasNext() {
+		// if (counterCheck != counter) {
+		// throw new ConcurrentModificationException();
+		// }
+		// return currIndex < set.size();
+		// }
 
-				for (PriorityQueueNode<T> node : set) {
-					arr.add(node);
-				}
-				if (counterCheck != counter) {
-					throw new ConcurrentModificationException();
-				}
-				currIndex++;
-				return arr.get(currIndex).getData();
-			}
-		};
+		// public T next() {
+		// ArrayList<PriorityQueueNode<T>> arr = new ArrayList<PriorityQueueNode<T>>();
+
+		// for (PriorityQueueNode<T> node : set) {
+		// arr.add(node);
+		// }
+		// if (counterCheck != counter) {
+		// throw new ConcurrentModificationException();
+		// }
+		// currIndex++;
+		// return arr.get(currIndex).getData();
+		// }
+		// };
+		return null;
 	}
 }

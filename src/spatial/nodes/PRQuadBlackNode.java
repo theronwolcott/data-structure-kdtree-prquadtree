@@ -39,7 +39,7 @@ public class PRQuadBlackNode extends PRQuadNode {
     /* ******************************************************************** */
     /* ************* PLACE ANY PRIVATE FIELDS AND METHODS HERE: ************ */
     /* ********************************************************************** */
-    public ArrayList<KDPoint> list;
+    private ArrayList<KDPoint> list;
     /* *********************************************************************** */
     /* *************** IMPLEMENT THE FOLLOWING PUBLIC METHODS: ************ */
     /* *********************************************************************** */
@@ -228,7 +228,7 @@ public class PRQuadBlackNode extends PRQuadNode {
     @Override
     public NNData<KDPoint> nearestNeighbor(KDPoint anchor, NNData<KDPoint> n) {
         for (KDPoint point : this.list) {
-            if (point.euclideanDistance(anchor) < n.getBestDist() || n.getBestDist() < 0 && !point.equals(anchor)) {
+            if ((point.euclideanDistance(anchor) < n.getBestDist() || n.getBestDist() < 0) && !point.equals(anchor)) {
                 n.update(point, point.euclideanDistance(anchor));
             }
         }
