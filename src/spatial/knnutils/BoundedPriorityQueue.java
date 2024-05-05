@@ -189,19 +189,21 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 		// }
 		// };
 		return new Iterator<T>() {
-			List<T> list = set.stream().map(node -> node.getData()).toList();
-			Iterator<T> it = list.iterator();
+			Iterator<PriorityQueueNode<T>> it = set.iterator();
+			int origSize = set.size();
 
 			@Override
 			public boolean hasNext() {
-				return false;
+				return it.hasNext();
 			}
 
 			@Override
 			public T next() {
-				return null;
+				if (set.size() != origSize) {
+					throw new ConcurrentModificationException();
+				}
+				return it.next().getData();
 			}
-
 		};
 	}
 }
