@@ -188,6 +188,18 @@ public class BoundedPriorityQueue<T> implements PriorityQueue<T> {
 		// return arr.get(currIndex).getData();
 		// }
 		// };
-		return null;
+		return new Iterator<T>() {
+
+			@Override
+			public boolean hasNext() {
+				return false;
+			}
+
+			@Override
+			public T next() {
+				return null;
+			}
+
+		};
 	}
 }
