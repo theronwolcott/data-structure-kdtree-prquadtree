@@ -1,13 +1,10 @@
 package spatial.nodes;
 
-import spatial.exceptions.UnimplementedMethodException;
+import java.util.Collection;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
 import spatial.knnutils.NNData;
 import spatial.trees.PRQuadTree;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * <p>
@@ -34,6 +31,8 @@ public class PRQuadGrayNode extends PRQuadNode {
     /* ******************************************************************** */
     /* ************* PLACE ANY PRIVATE FIELDS AND METHODS HERE: ************ */
     /* ********************************************************************** */
+    // 2x2 array representing the four quadrants: NW, NE, SW, SE
+    // Each entry can be null (white node), PRQuadBlackNode, or PRQuadGrayNode
     private PRQuadNode[][] list;
 
     /* *********************************************************************** */
@@ -54,9 +53,9 @@ public class PRQuadGrayNode extends PRQuadNode {
      * @see PRQuadTree#PRQuadTree(int, int)
      */
     public PRQuadGrayNode(KDPoint centroid, int k, int bucketingParam) {
-        super(centroid, k, bucketingParam); // Call to the super class' protected constructor to properly initialize the
-                                            // object!
-        list = new PRQuadNode[2][2];
+    super(centroid, k, bucketingParam); // Initialize centroid, dimension, and bucketing param
+    // Create empty 2x2 grid for children (NW, NE, SW, SE)
+    list = new PRQuadNode[2][2];
     }
 
     /**
@@ -86,61 +85,66 @@ public class PRQuadGrayNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode insert(KDPoint p, int k) {
+        // Determine which quadrant the point belongs to and insert recursively
         if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
-                if (this.list[0][0] == null) { // white
+            if (p.coords[1] >= this.centroid.coords[1]) { // NW quadrant
+                if (this.list[0][0] == null) { // If child is white, create new black node
                     this.list[0][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NW"), k - 1,
                             this.bucketingParam, p);
                     return this;
-                } else { // gray or black
+                } else { // If child exists, recurse
                     this.list[0][0] = this.list[0][0].insert(p, k - 1);
                 }
-            } else { // point is below centroid [1][0] SW
-                if (this.list[1][0] == null) { // white
+            } else { // SW quadrant
+                if (this.list[1][0] == null) {
                     this.list[1][0] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SW"), k - 1,
                             this.bucketingParam, p);
                     return this;
-                } else { // gray or black
+                } else {
                     this.list[1][0] = this.list[1][0].insert(p, k - 1);
                 }
             }
         } else { // point is right of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
-                if (this.list[0][1] == null) { // white
+            if (p.coords[1] >= this.centroid.coords[1]) { // NE quadrant
+                if (this.list[0][1] == null) {
                     this.list[0][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "NE"), k - 1,
                             this.bucketingParam, p);
                     return this;
-                } else { // gray or black
+                } else {
                     this.list[0][1] = this.list[0][1].insert(p, k - 1);
                 }
-            } else { // point is below [1][1] SE
-                if (this.list[1][1] == null) { // white
+            } else { // SE quadrant
+                if (this.list[1][1] == null) {
                     this.list[1][1] = new PRQuadBlackNode(newCentroid(this.centroid, k, "SE"), k - 1,
                             this.bucketingParam, p);
                     return this;
-                } else { // gray or black
+                } else {
                     this.list[1][1] = this.list[1][1].insert(p, k - 1);
                 }
             }
         }
+        // Always return this node (gray) after insertion
         return this;
     }
 
     private KDPoint newCentroid(KDPoint currCentroid, int k, String quadrant) {
+        // Helper to calculate the centroid for a child quadrant
         KDPoint newCentroid = new KDPoint();
+        int offset = (int) (Math.pow(2, k - 2));
         if (quadrant.equals("NW")) {
-            newCentroid.coords[0] = currCentroid.coords[0] - (int) (Math.pow(2, k - 2));
-            newCentroid.coords[1] = currCentroid.coords[1] + (int) (Math.pow(2, k - 2));
+            newCentroid.coords[0] = currCentroid.coords[0] - offset;
+            newCentroid.coords[1] = currCentroid.coords[1] + offset;
         } else if (quadrant.equals("NE")) {
-            newCentroid.coords[0] = currCentroid.coords[0] + (int) (Math.pow(2, k - 2));
-            newCentroid.coords[1] = currCentroid.coords[1] + (int) (Math.pow(2, k - 2));
+            newCentroid.coords[0] = currCentroid.coords[0] + offset;
+            newCentroid.coords[1] = currCentroid.coords[1] + offset;
         } else if (quadrant.equals("SW")) {
-            newCentroid.coords[0] = currCentroid.coords[0] - (int) (Math.pow(2, k - 2));
-            newCentroid.coords[1] = currCentroid.coords[1] - (int) (Math.pow(2, k - 2));
+            newCentroid.coords[0] = currCentroid.coords[0] - offset;
+            newCentroid.coords[1] = currCentroid.coords[1] - offset;
         } else if (quadrant.equals("SE")) {
-            newCentroid.coords[0] = currCentroid.coords[0] + (int) (Math.pow(2, k - 2));
-            newCentroid.coords[1] = currCentroid.coords[1] - (int) (Math.pow(2, k - 2));
-        } else { // shouldn't get ever here
+            newCentroid.coords[0] = currCentroid.coords[0] + offset;
+            newCentroid.coords[1] = currCentroid.coords[1] - offset;
+        } else {
+            // Invalid quadrant string
             return null;
         }
         return newCentroid;
@@ -187,30 +191,30 @@ public class PRQuadGrayNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode delete(KDPoint p) {
+        // If point is not found, do nothing
         if (this.search(p) == false) {
             return this;
         }
-        if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
-                if (this.list[0][0] == null) { // white
+        // Recursively delete from the correct quadrant
+        // If after deletion all children are null, collapse this node
+        // Otherwise, check if all points fit in a black node and merge if possible
+        if (p.coords[0] < this.centroid.coords[0]) {
+            if (p.coords[1] >= this.centroid.coords[1]) { // NW
+                if (this.list[0][0] == null) {
                     return null;
-                } else { // gray or black
+                } else {
                     this.list[0][0] = this.list[0][0].delete(p);
-                    // check if all 4 children are null now
                     if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
                             && this.list[1][1] == null) {
                         return null;
                     }
-                    // check if we can fit everyone into a new black node
                     return newBlackMerge(this);
                 }
-
-            } else { // point is below centroid [1][0] SW
-                if (this.list[1][0] == null) { // white
+            } else { // SW
+                if (this.list[1][0] == null) {
                     return null;
-                } else { // gray or black
+                } else {
                     this.list[1][0] = this.list[1][0].delete(p);
-                    // check if all 4 children are null now
                     if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
                             && this.list[1][1] == null) {
                         return null;
@@ -218,25 +222,23 @@ public class PRQuadGrayNode extends PRQuadNode {
                     return newBlackMerge(this);
                 }
             }
-        } else { // point is right of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
-                if (this.list[0][1] == null) { // white
+        } else {
+            if (p.coords[1] >= this.centroid.coords[1]) { // NE
+                if (this.list[0][1] == null) {
                     return null;
-                } else { // gray or black
+                } else {
                     this.list[0][1] = this.list[0][1].delete(p);
-                    // check if all 4 children are null now
                     if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
                             && this.list[1][1] == null) {
                         return null;
                     }
                     return newBlackMerge(this);
                 }
-            } else { // point is below [1][1] SE
-                if (this.list[1][1] == null) { // white
+            } else { // SE
+                if (this.list[1][1] == null) {
                     return null;
-                } else { // gray or black
+                } else {
                     this.list[1][1] = this.list[1][1].delete(p);
-                    // check if all 4 children are null now
                     if (this.list[0][0] == null && this.list[0][1] == null && this.list[1][0] == null
                             && this.list[1][1] == null) {
                         return null;
@@ -248,15 +250,16 @@ public class PRQuadGrayNode extends PRQuadNode {
     }
 
     private static PRQuadNode newBlackMerge(PRQuadGrayNode node) {
+        // If all points in children fit in a black node, merge them
         if (node.count() <= node.bucketingParam) {
             PRQuadBlackNode n = new PRQuadBlackNode(node.centroid, node.k,
                     node.bucketingParam);
             for (int x = 0; x < 2; x++) {
                 for (int y = 0; y < 2; y++) {
+                    // Only merge if child is black or null
                     if ((node.list[x][y] != null && node.list[x][y] instanceof PRQuadBlackNode)
                             || node.list[x][y] == null) {
                         if (node.list[x][y] == null) {
-                            // do nothing
                             continue;
                         }
                         PRQuadBlackNode black = (PRQuadBlackNode) node.list[x][y];
@@ -264,12 +267,14 @@ public class PRQuadGrayNode extends PRQuadNode {
                             n.insert(blackP, n.k);
                         }
                     } else {
+                        // If any child is gray, cannot merge
                         return node;
                     }
                 }
             }
             return n;
         }
+        // Otherwise, keep as gray node
         return node;
     }
 
@@ -301,31 +306,32 @@ public class PRQuadGrayNode extends PRQuadNode {
 
     @Override
     public boolean search(KDPoint p) {
-        if (p.coords[0] < this.centroid.coords[0]) { // point is left of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
-                if (this.list[0][0] == null) { // white
+        // Recursively search for the point in the correct quadrant
+        if (p.coords[0] < this.centroid.coords[0]) {
+            if (p.coords[1] >= this.centroid.coords[1]) { // NW
+                if (this.list[0][0] == null) {
                     return false;
-                } else { // gray or black
+                } else {
                     return this.list[0][0].search(p);
                 }
-            } else { // point is below centroid [1][0] SW
-                if (this.list[1][0] == null) { // white
+            } else { // SW
+                if (this.list[1][0] == null) {
                     return false;
-                } else { // gray or black
+                } else {
                     return this.list[1][0].search(p);
                 }
             }
-        } else { // point is right of centroid
-            if (p.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
-                if (this.list[0][1] == null) { // white
+        } else {
+            if (p.coords[1] >= this.centroid.coords[1]) { // NE
+                if (this.list[0][1] == null) {
                     return false;
-                } else { // gray or black
+                } else {
                     return this.list[0][1].search(p);
                 }
-            } else { // point is below [1][1] SE
-                if (this.list[1][1] == null) { // white
+            } else { // SE
+                if (this.list[1][1] == null) {
                     return false;
-                } else { // gray or black
+                } else {
                     return this.list[1][1].search(p);
                 }
             }
@@ -334,26 +340,28 @@ public class PRQuadGrayNode extends PRQuadNode {
 
     @Override
     public int height() {
-        int nwCount = (this.list[0][0] == null) ? -1 : this.list[0][0].height();
-        int neCount = (this.list[0][1] == null) ? -1 : this.list[0][1].height();
-        int swCount = (this.list[1][0] == null) ? -1 : this.list[1][0].height();
-        int seCount = (this.list[1][1] == null) ? -1 : this.list[1][1].height();
+    // Height is the max height among all children, plus one for this node
+    int nwCount = (this.list[0][0] == null) ? -1 : this.list[0][0].height();
+    int neCount = (this.list[0][1] == null) ? -1 : this.list[0][1].height();
+    int swCount = (this.list[1][0] == null) ? -1 : this.list[1][0].height();
+    int seCount = (this.list[1][1] == null) ? -1 : this.list[1][1].height();
 
-        int max1 = Math.max(nwCount, neCount);
-        int max2 = Math.max(swCount, seCount);
-        int max = Math.max(max1, max2);
-        return max + 1;
+    int max1 = Math.max(nwCount, neCount);
+    int max2 = Math.max(swCount, seCount);
+    int max = Math.max(max1, max2);
+    return max + 1;
 
     }
 
     @Override
     public int count() {
-        int nwCount = (this.list[0][0] == null) ? 0 : this.list[0][0].count();
-        int neCount = (this.list[0][1] == null) ? 0 : this.list[0][1].count();
-        int swCount = (this.list[1][0] == null) ? 0 : this.list[1][0].count();
-        int seCount = (this.list[1][1] == null) ? 0 : this.list[1][1].count();
+    // Count is the sum of all points in all children
+    int nwCount = (this.list[0][0] == null) ? 0 : this.list[0][0].count();
+    int neCount = (this.list[0][1] == null) ? 0 : this.list[0][1].count();
+    int swCount = (this.list[1][0] == null) ? 0 : this.list[1][0].count();
+    int seCount = (this.list[1][1] == null) ? 0 : this.list[1][1].count();
 
-        return nwCount + neCount + swCount + seCount;
+    return nwCount + neCount + swCount + seCount;
     }
 
     /**
@@ -370,104 +378,83 @@ public class PRQuadGrayNode extends PRQuadNode {
      *         </ol>
      */
     public PRQuadNode[] getChildren() {
-        PRQuadNode[] children = new PRQuadNode[4];
-        children[0] = this.list[0][0]; // NW
-        children[1] = this.list[0][1]; // NE
-        children[2] = this.list[1][0]; // SW
-        children[3] = this.list[1][1]; // SE
-        return children;
+    // Return children in Morton (Z) order: NW, NE, SW, SE
+    PRQuadNode[] children = new PRQuadNode[4];
+    children[0] = this.list[0][0]; // NW
+    children[1] = this.list[0][1]; // NE
+    children[2] = this.list[1][0]; // SW
+    children[3] = this.list[1][1]; // SE
+    return children;
     }
 
     @Override
     public void range(KDPoint anchor, Collection<KDPoint> results,
             double range) {
-        double nwDist = (this.list[0][0] == null) ? Double.MAX_VALUE
-                : nearestPointOnSquare(k, this.list[0][0].centroid, anchor).euclideanDistance(anchor);
-        double neDist = (this.list[0][1] == null) ? Double.MAX_VALUE
-                : nearestPointOnSquare(k, this.list[0][1].centroid, anchor).euclideanDistance(anchor);
-        double swDist = (this.list[1][0] == null) ? Double.MAX_VALUE
-                : nearestPointOnSquare(k, this.list[1][0].centroid, anchor).euclideanDistance(anchor);
-        double seDist = (this.list[1][1] == null) ? Double.MAX_VALUE
-                : nearestPointOnSquare(k, this.list[1][1].centroid, anchor).euclideanDistance(anchor);
+    // Calculate distance from anchor to each quadrant's bounding box
+    double nwDist = (this.list[0][0] == null) ? Double.MAX_VALUE
+        : nearestPointOnSquare(k, this.list[0][0].centroid, anchor).euclideanDistance(anchor);
+    double neDist = (this.list[0][1] == null) ? Double.MAX_VALUE
+        : nearestPointOnSquare(k, this.list[0][1].centroid, anchor).euclideanDistance(anchor);
+    double swDist = (this.list[1][0] == null) ? Double.MAX_VALUE
+        : nearestPointOnSquare(k, this.list[1][0].centroid, anchor).euclideanDistance(anchor);
+    double seDist = (this.list[1][1] == null) ? Double.MAX_VALUE
+        : nearestPointOnSquare(k, this.list[1][1].centroid, anchor).euclideanDistance(anchor);
 
-        if (anchor.coords[0] < this.centroid.coords[0]) { // point is left of centroid
-            if (anchor.coords[1] >= this.centroid.coords[1]) { // point is above centroid [0][0] NW
-                if (this.list[0][0] == null) { // white
-                    // do nothing
-                } else { // gray or black
+        // Recursively visit quadrants that may contain points in range
+        if (anchor.coords[0] < this.centroid.coords[0]) {
+            if (anchor.coords[1] >= this.centroid.coords[1]) { // NW
+                if (this.list[0][0] != null) {
                     this.list[0][0].range(anchor, results, range);
                 }
-                // check if other three are in range
-                if (neDist <= range) {
-                    // visit
+                // Visit other quadrants if their bounding box is within range
+                if (neDist <= range && this.list[0][1] != null) {
                     this.list[0][1].range(anchor, results, range);
                 }
-                if (swDist <= range) {
-                    // visit
+                if (swDist <= range && this.list[1][0] != null) {
                     this.list[1][0].range(anchor, results, range);
                 }
-                if (seDist <= range) {
-                    // visit
+                if (seDist <= range && this.list[1][1] != null) {
                     this.list[1][1].range(anchor, results, range);
                 }
-            } else { // point is below centroid [1][0] SW
-                if (this.list[1][0] == null) { // white
-                    // do nothing
-                } else { // gray or black
+            } else { // SW
+                if (this.list[1][0] != null) {
                     this.list[1][0].range(anchor, results, range);
-
                 }
-                // check if other three are in range
-                if (nwDist <= range) {
-                    // visit
+                if (nwDist <= range && this.list[0][0] != null) {
                     this.list[0][0].range(anchor, results, range);
                 }
-                if (neDist <= range) {
-                    // visit
+                if (neDist <= range && this.list[0][1] != null) {
                     this.list[0][1].range(anchor, results, range);
                 }
-                if (seDist <= range) {
-                    // visit
+                if (seDist <= range && this.list[1][1] != null) {
                     this.list[1][1].range(anchor, results, range);
                 }
             }
-        } else { // point is right of centroid
-            if (anchor.coords[1] >= this.centroid.coords[1]) { // point is above [0][1] NE
-                if (this.list[0][1] == null) { // white
-                    return;
-                } else { // gray or black
+        } else {
+            if (anchor.coords[1] >= this.centroid.coords[1]) { // NE
+                if (this.list[0][1] != null) {
                     this.list[0][1].range(anchor, results, range);
                 }
-                // check if other three are in range
-                if (nwDist <= range) {
-                    // visit
+                if (nwDist <= range && this.list[0][0] != null) {
                     this.list[0][0].range(anchor, results, range);
                 }
-                if (swDist <= range) {
-                    // visit
+                if (swDist <= range && this.list[1][0] != null) {
                     this.list[1][0].range(anchor, results, range);
                 }
-                if (seDist <= range) {
-                    // visit
+                if (seDist <= range && this.list[1][1] != null) {
                     this.list[1][1].range(anchor, results, range);
                 }
-            } else { // point is below [1][1] SE
-                if (this.list[1][1] == null) { // white
-                    return;
-                } else { // gray or black
+            } else { // SE
+                if (this.list[1][1] != null) {
                     this.list[1][1].range(anchor, results, range);
                 }
-                // check if other three are in range
-                if (nwDist <= range) {
-                    // visit
+                if (nwDist <= range && this.list[0][0] != null) {
                     this.list[0][0].range(anchor, results, range);
                 }
-                if (neDist <= range) {
-                    // visit
+                if (neDist <= range && this.list[0][1] != null) {
                     this.list[0][1].range(anchor, results, range);
                 }
-                if (swDist <= range) {
-                    // visit
+                if (swDist <= range && this.list[1][0] != null) {
                     this.list[1][0].range(anchor, results, range);
                 }
             }
@@ -476,6 +463,7 @@ public class PRQuadGrayNode extends PRQuadNode {
 
     @Override
     public NNData<KDPoint> nearestNeighbor(KDPoint anchor, NNData<KDPoint> n) {
+    // Recursively search for nearest neighbor in relevant quadrants
         double nwDist = (this.list[0][0] == null) ? Double.MAX_VALUE
                 : nearestPointOnSquare(k, this.list[0][0].centroid, anchor).euclideanDistance(anchor);
         double neDist = (this.list[0][1] == null) ? Double.MAX_VALUE
@@ -565,6 +553,7 @@ public class PRQuadGrayNode extends PRQuadNode {
 
     @Override
     public void kNearestNeighbors(int k, KDPoint anchor, BoundedPriorityQueue<KDPoint> queue) {
+    // Recursively search for k nearest neighbors in relevant quadrants
         double nwDist = (this.list[0][0] == null) ? Double.MAX_VALUE
                 : nearestPointOnSquare(k, this.list[0][0].centroid, anchor).euclideanDistance(anchor);
         double neDist = (this.list[0][1] == null) ? Double.MAX_VALUE
@@ -651,6 +640,7 @@ public class PRQuadGrayNode extends PRQuadNode {
     }
 
     private KDPoint nearestPointOnSquare(int k, KDPoint centroid, KDPoint anchor) {
+    // Find the closest point on the bounding box of a quadrant to the anchor
         if (centroid == null) {
             return null;
         }
@@ -678,6 +668,7 @@ public class PRQuadGrayNode extends PRQuadNode {
     }
 
     private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+    // Helper to get the current farthest distance in the k-NN queue
         if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }

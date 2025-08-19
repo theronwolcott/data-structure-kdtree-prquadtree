@@ -39,6 +39,7 @@ public class PRQuadBlackNode extends PRQuadNode {
     /* ******************************************************************** */
     /* ************* PLACE ANY PRIVATE FIELDS AND METHODS HERE: ************ */
     /* ********************************************************************** */
+    // Stores the KDPoints contained in this black node. Since black nodes are leaf nodes, this is the only place points are stored.
     private ArrayList<KDPoint> list;
     /* *********************************************************************** */
     /* *************** IMPLEMENT THE FOLLOWING PUBLIC METHODS: ************ */
@@ -61,9 +62,9 @@ public class PRQuadBlackNode extends PRQuadNode {
      * @see #PRQuadBlackNode(KDPoint, int, int, KDPoint)
      */
     public PRQuadBlackNode(KDPoint centroid, int k, int bucketingParam) {
-        super(centroid, k, bucketingParam); // Call to the super class' protected constructor to properly initialize the
-                                            // object is necessary, even for a constructor that just throws!
-        list = new ArrayList<KDPoint>();
+    // Initialize the black node by calling the parent constructor and creating an empty list for points.
+    super(centroid, k, bucketingParam);
+    list = new ArrayList<KDPoint>();
     }
 
     /**
@@ -86,9 +87,9 @@ public class PRQuadBlackNode extends PRQuadNode {
      * @see #PRQuadBlackNode(KDPoint, int, int)
      */
     public PRQuadBlackNode(KDPoint centroid, int k, int bucketingParam, KDPoint p) {
-        this(centroid, k, bucketingParam); // Call to the current class' other constructor, which takes care of the base
-                                           // class' initialization itself.
-        list.add(p);
+    // Initialize the black node and immediately add the provided KDPoint to the list.
+    this(centroid, k, bucketingParam);
+    list.add(p);
     }
 
     /**
@@ -133,18 +134,26 @@ public class PRQuadBlackNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode insert(KDPoint p, int k) {
-        if (this.list.size() < this.bucketingParam) { // list is not full, add to list
+        // If the current node has space (bucket not full), simply add the new point.
+        if (this.list.size() < this.bucketingParam) {
             list.add(p);
             return this;
-        } else { // list is full, make new gray, insert for each point, return it
+        } else {
+            // If the bucket is full, we need to split this black node into a gray node.
+            // This is the PR-QuadTree's way of handling overflow: create a new gray node and re-insert all points.
             if (k < 1) {
+                // If k < 1, we can't split further, so throw an exception.
                 throw new CentroidAccuracyException("Cannot split");
             }
+            // Create a new gray node with the same centroid, k, and bucket size.
             PRQuadGrayNode newGray = new PRQuadGrayNode(this.centroid, this.k, this.bucketingParam);
+            // Insert all existing points into the new gray node.
             for (KDPoint point : this.list) {
                 newGray.insert(point, k);
             }
+            // Insert the new point as well.
             newGray.insert(p, k);
+            // Return the new gray node, which replaces this black node in the tree.
             return newGray;
         }
     }
@@ -169,14 +178,18 @@ public class PRQuadBlackNode extends PRQuadNode {
      */
     @Override
     public PRQuadNode delete(KDPoint p) {
+        // If the point exists in this node, remove it.
         if (this.list.contains(p)) {
-            if (this.list.size() > 1) { // p isn't last node in list, remove it
+            if (this.list.size() > 1) {
+                // If there are still points left after removal, just remove and return this node.
                 list.remove(p);
                 return this;
-            } else { // last point in list,
+            } else {
+                // If this was the last point, return null to indicate the node should be deleted (turned into a white node).
                 return null;
             }
         } else {
+            // If the point isn't found, do nothing and return this node unchanged.
             return this;
         }
 
@@ -184,20 +197,20 @@ public class PRQuadBlackNode extends PRQuadNode {
 
     @Override
     public boolean search(KDPoint p) {
-        if (this.list.contains(p)) {
-            return true;
-        }
-        return false;
+    // Check if the point exists in this node's list.
+    return this.list.contains(p);
     }
 
     @Override
     public int height() {
-        return 0;
+    // Black nodes are always leaves, so their height is 0.
+    return 0;
     }
 
     @Override
     public int count() {
-        return list.size();
+    // Return the number of points stored in this node.
+    return list.size();
     }
 
     /**
@@ -212,12 +225,15 @@ public class PRQuadBlackNode extends PRQuadNode {
      *         a null reference.
      */
     public Collection<KDPoint> getPoints() {
-        return list;
+    // Return all points stored in this node.
+    return list;
     }
 
     @Override
     public void range(KDPoint anchor, Collection<KDPoint> results,
             double range) {
+        // For each point in this node, check if it's within the specified range from the anchor.
+        // If so, and it's not the anchor itself, add it to the results.
         for (KDPoint point : this.list) {
             if (point.euclideanDistance(anchor) <= range && !point.equals(anchor)) {
                 results.add(point);
@@ -227,6 +243,8 @@ public class PRQuadBlackNode extends PRQuadNode {
 
     @Override
     public NNData<KDPoint> nearestNeighbor(KDPoint anchor, NNData<KDPoint> n) {
+        // For each point, check if it's closer to the anchor than the current best.
+        // If so, update the nearest neighbor data.
         for (KDPoint point : this.list) {
             if ((point.euclideanDistance(anchor) < n.getBestDist() || n.getBestDist() < 0) && !point.equals(anchor)) {
                 n.update(point, point.euclideanDistance(anchor));
@@ -237,9 +255,10 @@ public class PRQuadBlackNode extends PRQuadNode {
 
     @Override
     public void kNearestNeighbors(int k, KDPoint anchor, BoundedPriorityQueue<KDPoint> queue) {
+        // For each point, check if it's closer than the farthest point currently in the queue.
+        // If so, and it's not the anchor, enqueue it with its distance.
         for (KDPoint point : this.list) {
             double dist = point.euclideanDistance(anchor);
-
             if (dist < calcDistance(anchor, queue, k) && !point.equals(anchor)) {
                 queue.enqueue(point, dist);
             }
@@ -247,9 +266,11 @@ public class PRQuadBlackNode extends PRQuadNode {
     }
 
     private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+        // If the queue isn't full, return infinity so any point will be added.
         if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }
+        // Otherwise, return the distance from the anchor to the farthest point in the queue.
         return queue.last().euclideanDistance(anchor);
     }
 }

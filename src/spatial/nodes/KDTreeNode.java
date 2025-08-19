@@ -1,11 +1,9 @@
 package spatial.nodes;
 
-import spatial.exceptions.UnimplementedMethodException;
+import java.util.Collection;
 import spatial.kdpoint.KDPoint;
 import spatial.knnutils.BoundedPriorityQueue;
 import spatial.knnutils.NNData;
-
-import java.util.Collection;
 
 /**
  * <p>
@@ -29,8 +27,11 @@ public class KDTreeNode {
      */
     /* ************* WE PROVIDE THESE FIELDS TO GET YOU STARTED. **************** */
     /* ************************************************************************** */
+    // The KDPoint stored at this node
     private KDPoint p;
+    // Height of the subtree rooted at this node
     private int height;
+    // Left and right children in the KD-Tree
     private KDTreeNode left, right;
 
     /*
@@ -59,10 +60,10 @@ public class KDTreeNode {
      *          <b>mutable!!!</b>.
      */
     public KDTreeNode(KDPoint p) {
-        this.p = p;
-        height = 0;
-        left = null;
-        right = null;
+    this.p = p; // Store the KDPoint in this node
+    height = 0; // Leaf node starts with height 0
+    left = null; // No children initially
+    right = null;
     }
 
     /**
@@ -82,19 +83,24 @@ public class KDTreeNode {
      * @see #delete(KDPoint, int, int)
      */
     public void insert(KDPoint pIn, int currDim, int dims) {
-        insert(this, pIn, currDim, dims);
+    // Delegate to static insert helper
+    insert(this, pIn, currDim, dims);
     }
 
     private static KDTreeNode insert(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
+        // If we've hit a null spot, insert the new point here
         if (node == null) {
             return new KDTreeNode(pIn);
         }
+        // Move to the next dimension for recursive insert
         var nextDim = (currDim + 1) % dims;
+        // Decide to go left or right based on current dimension value
         if (pIn.coords[currDim] < node.p.coords[currDim]) {
             node.left = insert(node.left, pIn, nextDim, dims);
         } else {
             node.right = insert(node.right, pIn, nextDim, dims);
         }
+        // Update height after insertion
         int lHeight = node.left == null ? -1 : node.left.height;
         int rHeight = node.right == null ? -1 : node.right.height;
         node.height = (Math.max(lHeight, rHeight)) + 1;
@@ -138,35 +144,42 @@ public class KDTreeNode {
     }
 
     private static KDTreeNode delete(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
+        // If node is null, nothing to delete
         if (node == null) {
             return null;
         }
+        // Move to the next dimension for recursive delete
         var nextDim = (currDim + 1) % dims;
 
+        // If we've found the node to delete
         if (node.p.equals(pIn)) {
+            // Case 1: Leaf node, just remove it
             if (node.left == null && node.right == null) {
                 return null;
             } else if (node.right != null) {
-                // find in order and swap
+                // Case 2: Has right child, find in-order successor in right subtree
                 var inOrder = inOrder(node.right, currDim, nextDim, dims);
-                node.p = inOrder;
-                // recursively delete on the one you swapped with
+                node.p = inOrder; // Replace current point with successor
+                // Recursively delete the successor
                 node.right = delete(node.right, inOrder, nextDim, dims);
             } else {
-                // find in order and swap
+                // Case 3: No right child, use left subtree
                 var inOrder = inOrder(node.left, currDim, nextDim, dims);
-                node.p = inOrder;
-                // make the left subtree the right, make left null
+                node.p = inOrder; // Replace current point with predecessor
+                // Move left subtree to right, remove left
                 node.right = node.left;
                 node.left = null;
-                // recursively delete on the one you swapped with
+                // Recursively delete the predecessor
                 node.right = delete(node.right, inOrder, nextDim, dims);
             }
         } else if (pIn.coords[currDim] < node.p.coords[currDim]) {
+            // Recurse left if target is less than current
             node.left = delete(node.left, pIn, nextDim, dims);
         } else {
+            // Otherwise recurse right
             node.right = delete(node.right, pIn, nextDim, dims);
         }
+        // Update height after deletion
         int lHeight = node.left == null ? -1 : node.left.height;
         int rHeight = node.right == null ? -1 : node.right.height;
         node.height = (Math.max(lHeight, rHeight)) + 1;
@@ -174,17 +187,20 @@ public class KDTreeNode {
     }
 
     private static KDPoint inOrder(KDTreeNode node, int targetDim, int currDim, int dims) {
+        // Find the KDPoint with the lowest value in targetDim in this subtree
         if (node == null) {
             return null;
         }
         var nextDim = (currDim + 1) % dims;
         var lowest = node.p;
+        // Check left subtree for lower value
         if (node.left != null) {
             var l = inOrder(node.left, targetDim, nextDim, dims);
             if (l.coords[targetDim] < lowest.coords[targetDim]) {
                 lowest = l;
             }
         }
+        // Check right subtree for lower value
         if (node.right != null) {
             var r = inOrder(node.right, targetDim, nextDim, dims);
             if (r.coords[targetDim] < lowest.coords[targetDim]) {
@@ -205,26 +221,29 @@ public class KDTreeNode {
      *         otherwise.
      */
     public boolean search(KDPoint pIn, int currDim, int dims) {
-        return search(this, pIn, currDim, dims);
+    // Delegate to static search helper
+    return search(this, pIn, currDim, dims);
     }
 
     private boolean search(KDTreeNode node, KDPoint pIn, int currDim, int dims) {
+        // If node is null, not found
         if (node == null) {
             return false;
         }
 
         var nextDim = (currDim + 1) % dims;
 
+        // If current node matches, found
         if (node.p.equals(pIn)) {
             return true;
         }
 
+        // Decide to search left or right based on current dimension
         if (pIn.coords[currDim] < node.p.coords[currDim]) {
             return search(node.left, pIn, nextDim, dims);
         } else {
             return search(node.right, pIn, nextDim, dims);
         }
-
     }
 
     /**
@@ -264,20 +283,22 @@ public class KDTreeNode {
 
     private static void range(KDTreeNode node, KDPoint anchor, Collection<KDPoint> results,
             double range, int currDim, int dims) {
+        // If node is null, nothing to check
         if (node == null) {
             return;
         }
         var nextDim = (currDim + 1) % dims;
-        double diff = Math.abs(anchor.coords[currDim] - range);
+        // diff is not used, but could be for pruning
 
+        // If left subtree could contain points in range, recurse left
         if ((anchor.coords[currDim] - range) <= node.p.coords[currDim]) {
-            // recurse left
             range(node.left, anchor, results, range, nextDim, dims);
         }
+        // If right subtree could contain points in range, recurse right
         if ((anchor.coords[currDim] + range) >= node.p.coords[currDim]) {
-            // recurse right
             range(node.right, anchor, results, range, nextDim, dims);
         }
+        // If current point is in range and not the anchor, add to results
         if (node.p.euclideanDistance(anchor) <= range && !node.p.equals(anchor)) {
             results.add(node.p);
         }
@@ -334,19 +355,24 @@ public class KDTreeNode {
 
     private static void nearestNeighbor(KDTreeNode node, KDPoint anchor, int currDim,
             NNData<KDPoint> n, int dims) {
+        // If node is null, nothing to check
         if (node == null) {
             return;
         }
         var nextDim = (currDim + 1) % dims;
+        // Distance between anchor and current node's point
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
+        // If this point is closer than current best and not anchor, update best
         if ((dist < n.getBestDist() || n.getBestDist() < 0) && !node.p.equals(anchor)) {
             n.update(node.p, dist);
         }
 
+        // Greedily descend left or right, then check if we need to branch
         if (anchor.coords[currDim] < node.p.coords[currDim]) {
             nearestNeighbor(node.left, anchor, nextDim, n, dims);
+            // If splitting plane is close enough, check other side
             if (diff < n.getBestDist()) {
                 nearestNeighbor(node.right, anchor, nextDim, n, dims);
             }
@@ -412,19 +438,24 @@ public class KDTreeNode {
 
     private static void kNearestNeighbors(KDTreeNode node, int k, KDPoint anchor, BoundedPriorityQueue<KDPoint> queue,
             int currDim, int dims) {
+        // If node is null, nothing to check
         if (node == null) {
             return;
         }
         var nextDim = (currDim + 1) % dims;
+        // Distance between anchor and current node's point
         double diff = Math.abs(anchor.coords[currDim] - node.p.coords[currDim]);
         double dist = node.p.euclideanDistance(anchor);
 
+        // If this point is closer than the farthest in queue and not anchor, enqueue
         if (dist < calcDistance(anchor, queue, k) && !node.p.equals(anchor)) {
             queue.enqueue(node.p, dist);
         }
 
+        // Greedily descend left or right, then check if we need to branch
         if (anchor.coords[currDim] < node.p.coords[currDim]) {
             kNearestNeighbors(node.left, k, anchor, queue, nextDim, dims);
+            // If splitting plane is close enough, check other side
             if (diff < calcDistance(anchor, queue, k)) {
                 kNearestNeighbors(node.right, k, anchor, queue, nextDim, dims);
             }
@@ -437,9 +468,11 @@ public class KDTreeNode {
     }
 
     private static double calcDistance(KDPoint anchor, BoundedPriorityQueue<KDPoint> queue, int k) {
+        // If queue isn't full, treat as infinite distance (so we always add)
         if (queue.size() < k) {
             return Double.POSITIVE_INFINITY;
         }
+        // Otherwise, return distance to farthest neighbor in queue
         return queue.last().euclideanDistance(anchor);
     }
 
